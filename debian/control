@@ -2,7 +2,7 @@ Source: probert
 Section: admin
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Build-Depends: debhelper-compat (= 13),
+Build-Depends: debhelper-compat (= 12),
                dh-python,
                libnl-genl-3-dev,
                libnl-route-3-dev,
