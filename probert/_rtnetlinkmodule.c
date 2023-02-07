@@ -236,15 +236,15 @@ static void observe_route_change(
 	}
 }
 
+static void _e_route(struct nl_object *ob, void *data) {
+	observe_route_change(NL_ACT_NEW, (struct rtnl_route *)ob, (struct Listener*)data);
+}
+
 static void _cb_route(struct nl_cache *cache, struct nl_object *ob, int act,
                     void *data) {
 	observe_route_change(act, (struct rtnl_route *)ob, (struct Listener*)data);
 	struct Listener *listener = (struct Listener *)data;
 	nl_cache_foreach(listener->route_cache, _e_route, (PyObject *)data);
-}
-
-static void _e_route(struct nl_object *ob, void *data) {
-	observe_route_change(NL_ACT_NEW, (struct rtnl_route *)ob, (struct Listener*)data);
 }
 
 static void
