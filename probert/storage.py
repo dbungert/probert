@@ -213,6 +213,7 @@ class Storage():
                 if get_all or probe.in_default_set}
 
     async def probe(self, probe_types=None, *, parallelize=False):
+        log.debug("Starting Storage Probe")
         default_probes = self._get_probe_types(False)
         all_probes = self._get_probe_types(True)
         if not probe_types:
@@ -234,12 +235,15 @@ class Storage():
 
         async def run_probe(ptype):
             probe = self.probe_map[ptype]
+            log.debug(f"Storage Probe: Starting {ptype} subprobe")
             result = await probe.pfunc(context=self.context,
                                        enabled_probes=to_probe,
                                        parallelize=parallelize)
             if result is not None:
                 probed_data[ptype] = result
+            log.debug(f"Storage Probe: Finished {ptype} subprobe")
 
+        log.debug(f"Types to probe: {to_probe}")
         coroutines = [run_probe(ptype) for ptype in to_probe]
 
         if parallelize:
@@ -249,4 +253,5 @@ class Storage():
                 await coroutine
 
         self.results = probed_data
+        log.debug("Finished Storage Probe")
         return probed_data
