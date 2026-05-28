@@ -20,6 +20,8 @@ import re
 import shutil
 import subprocess
 
+from probert import _dep_tracer
+
 log = logging.getLogger('probert.os')
 
 
@@ -71,7 +73,9 @@ def _run_os_prober():
         # os-prober attempts to run in a private mount namespace.
         # However, it is not currently working.
         # See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1034485
-        result = subprocess.run(["unshare", "-m", cmd], stdout=subprocess.PIPE,
+        _osprober_cmd = ["unshare", "-m", cmd]
+        _dep_tracer.log_call(_osprober_cmd)
+        result = subprocess.run(_osprober_cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 universal_newlines=True, check=True)
         return result.stdout or ''

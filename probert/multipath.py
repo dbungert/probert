@@ -16,6 +16,8 @@ from collections import namedtuple
 import logging
 import subprocess
 
+from probert import _dep_tracer
+
 MPath = namedtuple("MPath", ('device', 'serial', 'multipath', 'host_wwnn',
                              'target_wwnn', 'host_wwpn', 'target_wwpn',
                              'host_adapter'))
@@ -31,6 +33,7 @@ log = logging.getLogger('probert.multipath')
 
 def _extract_mpath_data(cmd, show_verb):
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
     except (subprocess.CalledProcessError, FileNotFoundError):

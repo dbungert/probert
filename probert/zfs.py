@@ -20,6 +20,8 @@ import re
 import subprocess
 from functools import reduce
 
+from probert import _dep_tracer
+
 
 log = logging.getLogger('probert.zfs')
 ZfsListEntry = namedtuple('ZfsListEntry',
@@ -121,6 +123,7 @@ def zdb_asdict(data=None):
         if not os.path.exists('/etc/zfs/zpool.cache'):
             cmd.append('-e')
         try:
+            _dep_tracer.log_call(cmd)
             result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.DEVNULL)
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -134,6 +137,7 @@ def zdb_asdict(data=None):
 def zfs_list_filesystems(raw_output=False):
     cmd = ['zfs', 'list', '-Hp', '-t', 'filesystem']
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
@@ -160,6 +164,7 @@ def zfs_get_properties(zfs_name, raw_output=False):
 
     cmd = ['zfs', 'get', 'all', '-Hp', zfs_name]
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
     except subprocess.ProcessExecutionError:

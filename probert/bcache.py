@@ -16,6 +16,7 @@ import logging
 import os
 import subprocess
 
+from probert import _dep_tracer
 from probert.utils import sane_block_devices
 
 
@@ -30,6 +31,7 @@ def superblock_asdict(device=None, data=None):
 
     if not data:
         cmd = ['bcache-super-show', device]
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
         data = result.stdout.decode('utf-8')

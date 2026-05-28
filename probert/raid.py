@@ -16,6 +16,7 @@ import logging
 import os
 import subprocess
 
+from probert import _dep_tracer
 import pyudev
 
 from probert.utils import (
@@ -32,6 +33,7 @@ SUPPORTED_RAID_TYPES = ['raid0', 'raid1', 'raid5', 'raid6', 'raid10']
 def mdadm_assemble(scan=True, ignore_errors=True):
     cmd = ['mdadm', '--detail', '--scan', '-v']
     try:
+        _dep_tracer.log_call(cmd)
         subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError as e:
         log.error('Failed mdadm_assemble command %s: %s', cmd, e)
@@ -62,6 +64,7 @@ def get_mdadm_array_members(md_device):
     '''
     cmd = ['mdadm', '--detail', '--export', md_device]
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
         output = result.stdout.decode('utf-8')

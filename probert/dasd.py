@@ -19,6 +19,7 @@ import pyudev
 import re
 import subprocess
 
+from probert import _dep_tracer
 from probert.utils import sane_block_devices
 
 
@@ -81,6 +82,7 @@ def dasdview(devname):
 
     cmd = ['dasdview', '--extended', devname]
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -168,8 +170,10 @@ async def probe(context=None, **kw):
             # but it must still be formatted with vtoc, so we report
             # it here. The only way I can find to detect such a device
             # is that "fdasd -i" on the device is successful.
+            _fdasd_cmd = ['fdasd', '-i', device['DEVNAME']]
+            _dep_tracer.log_call(_fdasd_cmd)
             result = subprocess.run(
-                ['fdasd', '-i', device['DEVNAME']],
+                _fdasd_cmd,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             log.debug(
                 "fasd -i %s returned %s",

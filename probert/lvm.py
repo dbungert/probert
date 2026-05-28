@@ -17,6 +17,7 @@ import json
 import os
 import subprocess
 
+from probert import _dep_tracer
 import pyudev
 
 from probert.utils import (
@@ -48,6 +49,7 @@ def _lvm_report(cmd, report_key):
         return [y for x in data for y in x]
 
     try:
+        _dep_tracer.log_call(cmd)
         result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
         output = result.stdout.decode('utf-8')
@@ -94,6 +96,7 @@ def lvm_scan():
         if lvmetad_running():
             cmd.append('--cache')
         try:
+            _dep_tracer.log_call(cmd)
             subprocess.run(cmd, stdout=subprocess.DEVNULL,
                            stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as e:
@@ -113,7 +116,9 @@ def activate_volgroups():
 
     # vgchange handles syncing with udev by default
     # see man 8 vgchange and flag --noudevsync
-    result = subprocess.run(['vgchange', '--activate=y'], check=False,
+    _vgchange_cmd = ['vgchange', '--activate=y']
+    _dep_tracer.log_call(_vgchange_cmd)
+    result = subprocess.run(_vgchange_cmd, check=False,
                             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     if result.stdout:
         log.info(result.stdout)

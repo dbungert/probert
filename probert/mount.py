@@ -16,6 +16,8 @@ import json
 import logging
 import subprocess
 
+from probert import _dep_tracer
+
 log = logging.getLogger('probert.mount')
 
 
@@ -23,6 +25,7 @@ def findmnt(data=None):
     if not data:
         cmd = ['findmnt', '--bytes', '--json', '-o', '+maj:min']
         try:
+            _dep_tracer.log_call(cmd)
             result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.DEVNULL)
         except (subprocess.CalledProcessError, FileNotFoundError):

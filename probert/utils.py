@@ -9,6 +9,7 @@ import shlex
 import subprocess
 from subprocess import PIPE
 
+from probert import _dep_tracer
 import pyudev
 
 log = logging.getLogger('probert.utils')
@@ -56,6 +57,7 @@ def run(cmdarr, env=None, **kw):
     """Run the given, with stdout, stderr, and return code always logged.
     Returns the stdout on command success, or None on command failure."""
     env = _clean_env(env)
+    _dep_tracer.log_call(cmdarr)
     sp = subprocess.run(cmdarr, text=True, env=env,
                         stdout=PIPE, stderr=PIPE, **kw)
     display_cmd = shlex.join(cmdarr)
@@ -73,6 +75,7 @@ async def arun(cmdarr, env=None, **kw):
     """Run the given, with stdout, stderr, and return code always logged.
     Returns the stdout on command success, or None on command failure."""
     env = _clean_env(env)
+    _dep_tracer.log_call(cmdarr)
     sp = await asyncio.create_subprocess_exec(
             *cmdarr, env=env, stdout=PIPE, stderr=PIPE, **kw)
     display_cmd = shlex.join(cmdarr)

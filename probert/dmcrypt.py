@@ -15,6 +15,7 @@
 import logging
 import subprocess
 
+from probert import _dep_tracer
 import pyudev
 
 from probert.utils import sane_block_devices
@@ -35,10 +36,11 @@ def dmsetup_info(devname):
     '''
     _SEP = '='
     fields = ('name,uuid,blkdevname,blkdevs_used,subsystem'.split(','))
+    _dmsetup_cmd = ['sudo', 'dmsetup', 'info', devname, '-C', '-o',
+                    ','.join(fields), '--noheading', '--separator', _SEP]
     try:
-        output = subprocess.check_output(
-            ['sudo', 'dmsetup', 'info', devname, '-C', '-o',
-             ','.join(fields), '--noheading', '--separator', _SEP])
+        _dep_tracer.log_call(_dmsetup_cmd)
+        output = subprocess.check_output(_dmsetup_cmd)
     except subprocess.CalledProcessError as e:
         log.error('Failed to probe dmsetup info:', e)
         return None

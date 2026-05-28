@@ -19,6 +19,7 @@ import logging
 import pyudev
 import subprocess
 
+from probert import _dep_tracer
 from probert.utils import (
     read_sys_block_size_bytes,
     sane_block_devices,
@@ -113,6 +114,7 @@ async def blockdev_probe(context=None, **kw):
     def _extract_partition_table(devname):
         cmd = ['sfdisk', '--bytes', '--json', devname]
         try:
+            _dep_tracer.log_call(cmd)
             result = subprocess.run(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.DEVNULL)
             output = result.stdout.decode('utf-8')
